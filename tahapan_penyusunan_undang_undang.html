@@ -58,10 +58,30 @@ footer{text-align:center;color:#71869f;font-size:.78rem;margin:28px 0 8px}
     <footer>DriveHub · Upload file ke Google Drive</footer>
   </main>
   
+
 <script>
 (() => {
-  // Ganti dengan URL Web App Google Apps Script yang berakhiran /exec.
+
+  // ========================================
+  // 1. KONFIGURASI
+  // ========================================
+
   const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw0OWXRmLgqY6IwSjwUQYzp-B7AgjezS0XaTWGyn95trUrARPiGTcaWy-pspHTMsWTe/exec";
+
+  const MAX_BYTES = 5 * 1024 * 1024; // 5 MB
+
+  const ALLOWED_TYPES = {
+    pdf: "application/pdf",
+    png: "image/png",
+    jpg: "image/jpeg",
+    jpeg: "image/jpeg"
+  };
+
+
+  // ========================================
+  // 2. MENGAMBIL ELEMEN HTML
+  // ========================================
+
   const form = document.getElementById("uploadForm");
   const fileInput = document.getElementById("file");
   const nameInput = document.getElementById("newName");
@@ -71,77 +91,306 @@ footer{text-align:center;color:#71869f;font-size:.78rem;margin:28px 0 8px}
   const button = document.getElementById("submitBtn");
   const bar = document.getElementById("bar");
   const status = document.getElementById("status");
-  const MAX_BYTES = 30 * 1024 * 1024; // 5 MB; batas praktis dapat berbeda di Apps Script.
-  let busy = false;
 
-  function message(text, type="") {
+
+  // Pastikan seluruh elemen tersedia
+  if (
+    !form || !fileInput || !nameInput ||
+    !payloadInput || !requestIdInput ||
+    !iframe || !button || !bar || !status
+  ) {
+    console.error("DriveHub: Elemen HTML tidak lengkap.");
+    return;
+  }
+
+
+  // ========================================
+  // 3. STATUS UPLOAD
+  // ========================================
+
+  let busy = false;
+  let uploadTimeout;
+
+
+  function message(text, type = "") {
     status.textContent = text;
     status.className = "status " + type;
   }
-  function progress(value) { bar.style.width = Math.max(0, Math.min(100, value)) + "%"; }
 
-  window.addEventListener("message", (event) => {
-    if (event.source !== iframe.contentWindow || !event.data || event.data.requestId !== requestIdInput.value) return;
+
+  function progress(value) {
+    bar.style.width =
+      Math.max(0, Math.min(100, value)) + "%";
+  }
+
+
+  function resetButton() {
     busy = false;
+
+    clearTimeout(uploadTimeout);
+
     button.disabled = false;
     button.textContent = "Unggah File";
-    if (event.data.ok) {
-      progress(100);
-      message("Berhasil! File telah disimpan ke Google Drive.", "ok");
-      form.reset();
-    } else {
-      message(event.data.error || "Upload gagal. Silakan coba lagi.", "err");
+  }
+
+
+  // ========================================
+  // 4. MENERIMA RESPONS APPS SCRIPT
+  // ========================================
+
+  window.addEventListener("message", (event) => {
+
+    // Periksa sumber pesan dan ID permintaan
+    if (
+      event.source !== iframe.contentWindow ||
+      !event.data ||
+      event.data.requestId !== requestIdInput.value
+    ) {
+      return;
     }
+
+    resetButton();
+
+    if (event.data.ok) {
+
+      progress(100);
+
+      message(
+        "Berhasil! File telah disimpan ke Google Drive.",
+        "ok"
+      );
+
+      form.reset();
+
+    } else {
+
+      message(
+        event.data.error || "Upload gagal. Silakan coba lagi.",
+        "err"
+      );
+
+    }
+
   });
+
+
+  // ========================================
+  // 5. PROSES UPLOAD
+  // ========================================
 
   form.addEventListener("submit", (event) => {
-    event.preventDefault();
-    if (busy) return;
-    const file = fileInput.files[0];
-    if (!file) return message("Pilih file terlebih dahulu.", "err");
-    if (file.size > MAX_BYTES) return message("Ukuran file melebihi batas 30 MB.", "err");
-    if (!SCRIPT_URL.startsWith("https://script.google.com/")) return message("URL Apps Script belum diatur. Periksa konstanta SCRIPT_URL di file ini.", "err");
 
+    event.preventDefault();
+
+    if (busy) return;
+
+
+    // Periksa file
+    const file = fileInput.files[0];
+
+    if (!file) {
+      return message(
+        "Pilih file terlebih dahulu.",
+        "err"
+      );
+    }
+
+
+    // Periksa ukuran file
+    if (file.size > MAX_BYTES) {
+      return message(
+        "Ukuran file maksimal 5 MB.",
+        "err"
+      );
+    }
+
+
+    // Periksa ekstensi
+    const extension = file.name
+      .split(".")
+      .pop()
+      .toLowerCase();
+
+    if (!ALLOWED_TYPES[extension]) {
+      return message(
+        "Hanya PDF, PNG, JPG, dan JPEG yang diizinkan.",
+        "err"
+      );
+    }
+
+
+    // Periksa folder tujuan
+    if (!form.dataset.folder) {
+      return message(
+        "Konfigurasi folder belum ditemukan.",
+        "err"
+      );
+    }
+
+
+    // Periksa URL Apps Script
+    if (
+      !SCRIPT_URL.startsWith(
+        "https://script.google.com/macros/s/"
+      ) ||
+      !SCRIPT_URL.endsWith("/exec")
+    ) {
+      return message(
+        "URL Apps Script tidak valid.",
+        "err"
+      );
+    }
+
+
+    // Mulai upload
     busy = true;
+
     button.disabled = true;
     button.textContent = "Menyiapkan file…";
+
     message("Membaca file…");
+
     progress(5);
 
+
+    // ========================================
+    // 6. MEMBACA FILE
+    // ========================================
+
     const reader = new FileReader();
-    reader.onprogress = (e) => { if (e.lengthComputable) progress(5 + (e.loaded / e.total) * 45); };
-    reader.onerror = () => {
-      busy = false; button.disabled = false; button.textContent = "Unggah File";
-      message("Gagal membaca file dari perangkat.", "err");
-    };
-    reader.onload = () => {
-      try {
-        const base64 = String(reader.result).split(",")[1];
-        const requestId = "req-" + Date.now() + "-" + Math.random().toString(36).slice(2);
-        payloadInput.value = JSON.stringify({
-          requestId,
-          folderKey: form.dataset.folder,
-          fileName: nameInput.value.trim() || file.name,
-          mimeType: file.type || "application/octet-stream",
-          base64
-        });
-        requestIdInput.value = requestId;
-        form.action = SCRIPT_URL;
-        progress(55);
-        message("Mengirim file ke Google Apps Script…");
-        button.textContent = "Mengunggah…";
-        form.submit();
-        // Progress ini hanya indikator tahap, bukan persentase transfer jaringan.
-        progress(70);
-      } catch (err) {
-        busy = false; button.disabled = false; button.textContent = "Unggah File";
-        message("Terjadi kesalahan saat menyiapkan upload.", "err");
+
+
+    reader.onprogress = (e) => {
+
+      if (e.lengthComputable) {
+
+        progress(
+          5 + (e.loaded / e.total) * 45
+        );
+
       }
+
     };
+
+
+    reader.onerror = () => {
+
+      resetButton();
+
+      message(
+        "Gagal membaca file dari perangkat.",
+        "err"
+      );
+
+    };
+
+
+    reader.onload = () => {
+
+      try {
+
+        const base64 = String(reader.result).split(",")[1];
+
+
+        // Buat ID permintaan unik
+        const requestId =
+          "req-" +
+          Date.now() +
+          "-" +
+          Math.random().toString(36).slice(2);
+
+
+        // ========================================
+        // 7. MENYIAPKAN PAYLOAD
+        // ========================================
+
+        payloadInput.value = JSON.stringify({
+
+          requestId: requestId,
+
+          folderKey: form.dataset.folder,
+
+          fileName:
+            nameInput.value.trim() || file.name,
+
+          mimeType: ALLOWED_TYPES[extension],
+
+          base64: base64
+
+        });
+
+
+        requestIdInput.value = requestId;
+
+
+        // Atur tujuan pengiriman
+        form.action = SCRIPT_URL;
+
+
+        progress(55);
+
+        message(
+          "Mengirim file ke Google Apps Script…"
+        );
+
+        button.textContent = "Mengunggah…";
+
+
+        // ========================================
+        // 8. MENGIRIM FILE
+        // ========================================
+
+        form.submit();
+
+        // Indikator tahap pengiriman, bukan
+        // persentase transfer jaringan sebenarnya.
+        progress(70);
+
+
+        // ========================================
+        // 9. TIMEOUT 120 DETIK
+        // ========================================
+
+        uploadTimeout = setTimeout(() => {
+
+          if (!busy) return;
+
+          resetButton();
+
+          message(
+            "Server tidak memberikan respons. " +
+            "Periksa koneksi atau coba lagi.",
+            "err"
+          );
+
+        }, 120000);
+
+
+      } catch (err) {
+
+        console.error("DriveHub Upload Error:", err);
+
+        resetButton();
+
+        message(
+          "Terjadi kesalahan saat menyiapkan upload.",
+          "err"
+        );
+
+      }
+
+    };
+
+
+    // Mulai membaca file sebagai Base64
     reader.readAsDataURL(file);
+
   });
+
+
 })();
 </script>
+
 
 </body>
 </html>
