@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#07111f">
+  <title>Tahapan penyusunan Undang Undang | DriveHub</title>
+  <style>
+:root{color-scheme:dark;--bg:#07111f;--panel:#0d1b2e;--panel2:#10243d;--line:#203954;--text:#edf5ff;--muted:#9db0c7;--blue:#2878e5;--blue2:#1554b5;--ok:#35c98a;--danger:#ff6b76}
+*{box-sizing:border-box}body{margin:0;min-height:100vh;background:radial-gradient(ellipse at top,#10294a 0%,#07111f 55%);font-family:Inter,system-ui,-apple-system,Segoe UI,Arial,sans-serif;color:var(--text);padding:28px 16px}
+.wrap{width:min(900px,100%);margin:0 auto}.top{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:42px}.brand{font-weight:800;letter-spacing:.4px;font-size:1.15rem}.brand span{color:#65a7ff}.nav{color:var(--muted);text-decoration:none;font-size:.92rem}.nav:hover{color:white}
+.hero{text-align:center;margin:50px auto 34px}.eyebrow{color:#76adf5;font-weight:700;text-transform:uppercase;letter-spacing:2px;font-size:.75rem}.hero h1{font-size:clamp(2.1rem,7vw,3.6rem);line-height:1.08;margin:12px 0}.hero p{color:var(--muted);max-width:590px;margin:0 auto;line-height:1.7}
+.panel{background:linear-gradient(145deg,rgba(16,36,61,.96),rgba(10,25,43,.96));border:1px solid var(--line);border-radius:22px;padding:clamp(20px,5vw,34px);box-shadow:0 22px 65px #0005}
+.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-top:28px}.folder{display:block;text-decoration:none;color:var(--text);background:var(--panel2);border:1px solid var(--line);border-radius:16px;padding:22px 18px;transition:.2s}.folder:hover{transform:translateY(-3px);border-color:#438eea;background:#153052}.folder .ico{font-size:1.7rem}.folder h2{font-size:1.05rem;margin:13px 0 6px}.folder p{font-size:.86rem;color:var(--muted);margin:0;line-height:1.5}
+.pagehead{margin:28px 0 24px}.pagehead h1{font-size:clamp(1.8rem,6vw,2.6rem);margin:8px 0}.pagehead p{color:var(--muted);line-height:1.6;margin:0}
+.field{margin:20px 0}.field label{display:block;font-size:.9rem;font-weight:650;margin-bottom:9px}.field input[type=text],.field input[type=file]{width:100%;padding:14px;border:1px solid var(--line);border-radius:12px;background:#081729;color:var(--text);font:inherit}.field input[type=file]{padding:12px}.hint{font-size:.8rem;color:var(--muted);margin-top:8px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:9px;border:0;border-radius:12px;padding:14px 20px;background:linear-gradient(135deg,var(--blue),var(--blue2));color:white;font-weight:750;font-size:.95rem;text-decoration:none;cursor:pointer;width:100%}.btn:disabled{opacity:.55;cursor:not-allowed}.btn.secondary{background:#132b46;border:1px solid var(--line);margin-top:12px}
+.progress{height:9px;background:#071321;border-radius:20px;overflow:hidden;margin-top:16px;border:1px solid var(--line)}.bar{height:100%;width:0;background:linear-gradient(90deg,#2878e5,#56b7ff);transition:width .15s}.status{min-height:24px;margin-top:12px;font-size:.88rem;color:var(--muted);line-height:1.5}.status.ok{color:var(--ok)}.status.err{color:var(--danger)}
+footer{text-align:center;color:#71869f;font-size:.78rem;margin:28px 0 8px}
+@media(max-width:650px){body{padding:20px 13px}.top{margin-bottom:24px}.hero{margin:35px auto 26px}.grid{grid-template-columns:1fr}.folder{display:flex;align-items:center;gap:15px;padding:17px}.folder .ico{font-size:1.9rem}.folder h2{margin:0 0 4px}.folder p{margin:0}}
+</style>
+  
+</head>
+<body>
+  <main class="wrap">
+    <header class="top">
+      <a class="brand" href="index.html" style="color:inherit;text-decoration:none">Drive<span>Hub</span></a>
+      <a class="nav" href="index.html">← Beranda</a>
+    </header>
+    
+<section class="pagehead">
+  <div class="eyebrow">Direktori upload</div>
+  <h1>🗂️ Tahapan penyusunan Undang Undang</h1>
+  <p>Silahkan pilih file untuk di upload ke direktori ini.</p>
+</section>
+<section class="panel">
+  <form id="uploadForm" data-folder="FOLDER_1" method="post" target="uploadFrame">
+    <div class="field">
+      <label for="file">Pilih file</label>
+      <input id="file" type="file" accept=".pdf,.png,.jpg,.jpeg" required>
+      <div class="hint">Ukuran maksimal pada antarmuka ini: 5 MB per file.</div>
+    </div>
+    <div class="field">
+      <label for="newName">Nama file</label>
+      <input id="newName" type="text" maxlength="180" placeholder="Isi dengan format nama, kelas, dan nomor absen">
+      <div class="hint">Ekstensi file akan ditambahkan otomatis jika nama baru belum memilikinya.</div>
+    </div>
+    <input type="hidden" id="payload" name="payload">
+    <input type="hidden" id="requestId" name="requestId">
+    <button class="btn" id="submitBtn" type="submit">Unggah File</button>
+    <div class="progress"><div class="bar" id="bar"></div></div>
+    <div class="status" id="status" role="status" aria-live="polite">Siap menerima file.</div>
+  </form>
+  <iframe id="uploadFrame" name="uploadFrame" title="Hasil upload" hidden></iframe>
+  <a class="btn secondary" href="index.html">Kembali ke Beranda</a>
+</section>
+
+    <footer>DriveHub · Upload file ke Google Drive</footer>
+  </main>
+  
+<script>
+(() => {
+  // Ganti dengan URL Web App Google Apps Script yang berakhiran /exec.
+  const SCRIPT_URL = "PASTE_URL_WEB_APP_GOOGLE_APPS_SCRIPT_DI_SINI";
+  const form = document.getElementById("uploadForm");
+  const fileInput = document.getElementById("file");
+  const nameInput = document.getElementById("newName");
+  const payloadInput = document.getElementById("payload");
+  const requestIdInput = document.getElementById("requestId");
+  const iframe = document.getElementById("uploadFrame");
+  const button = document.getElementById("submitBtn");
+  const bar = document.getElementById("bar");
+  const status = document.getElementById("status");
+  const MAX_BYTES = 5 * 1024 * 1024; // 5 MB; batas praktis dapat berbeda di Apps Script.
+  let busy = false;
+
+  function message(text, type="") {
+    status.textContent = text;
+    status.className = "status " + type;
+  }
+  function progress(value) { bar.style.width = Math.max(0, Math.min(100, value)) + "%"; }
+
+  window.addEventListener("message", (event) => {
+    if (event.source !== iframe.contentWindow || !event.data || event.data.requestId !== requestIdInput.value) return;
+    busy = false;
+    button.disabled = false;
+    button.textContent = "Unggah File";
+    if (event.data.ok) {
+      progress(100);
+      message("Berhasil! File telah disimpan ke Google Drive.", "ok");
+      form.reset();
+    } else {
+      message(event.data.error || "Upload gagal. Silakan coba lagi.", "err");
+    }
+  });
+
+  form.addEventListener("submit", (event) => {
+    event.preventDefault();
+    if (busy) return;
+    const file = fileInput.files[0];
+    if (!file) return message("Pilih file terlebih dahulu.", "err");
+    if (file.size > MAX_BYTES) return message("Ukuran file melebihi batas 5 MB.", "err");
+    if (!SCRIPT_URL.startsWith("https://script.google.com/")) return message("URL Apps Script belum diatur. Periksa konstanta SCRIPT_URL di file ini.", "err");
+
+    busy = true;
+    button.disabled = true;
+    button.textContent = "Menyiapkan file…";
+    message("Membaca file…");
+    progress(5);
+
+    const reader = new FileReader();
+    reader.onprogress = (e) => { if (e.lengthComputable) progress(5 + (e.loaded / e.total) * 45); };
+    reader.onerror = () => {
+      busy = false; button.disabled = false; button.textContent = "Unggah File";
+      message("Gagal membaca file dari perangkat.", "err");
+    };
+    reader.onload = () => {
+      try {
+        const base64 = String(reader.result).split(",")[1];
+        const requestId = "req-" + Date.now() + "-" + Math.random().toString(36).slice(2);
+        payloadInput.value = JSON.stringify({
+          requestId,
+          folderKey: form.dataset.folder,
+          fileName: nameInput.value.trim() || file.name,
+          mimeType: file.type || "application/octet-stream",
+          base64
+        });
+        requestIdInput.value = requestId;
+        form.action = SCRIPT_URL;
+        progress(55);
+        message("Mengirim file ke Google Apps Script…");
+        button.textContent = "Mengunggah…";
+        form.submit();
+        // Progress ini hanya indikator tahap, bukan persentase transfer jaringan.
+        progress(70);
+      } catch (err) {
+        busy = false; button.disabled = false; button.textContent = "Unggah File";
+        message("Terjadi kesalahan saat menyiapkan upload.", "err");
+      }
+    };
+    reader.readAsDataURL(file);
+  });
+})();
+</script>
+
+</body>
+</html>
