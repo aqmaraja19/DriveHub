@@ -38,7 +38,7 @@ footer{text-align:center;color:#71869f;font-size:.78rem;margin:28px 0 8px}
     <div class="field">
       <label for="file">Pilih file</label>
       <input id="file" type="file" accept=".pdf,.png,.jpg,.jpeg" required>
-      <div class="hint">Ukuran maksimal pada antarmuka ini: 5 MB per file.</div>
+      <div class="hint">Ukuran maksimal pada antarmuka ini: 30 MB per file.</div>
     </div>
     <div class="field">
       <label for="newName">Nama file</label>
@@ -71,7 +71,7 @@ footer{text-align:center;color:#71869f;font-size:.78rem;margin:28px 0 8px}
   const button = document.getElementById("submitBtn");
   const bar = document.getElementById("bar");
   const status = document.getElementById("status");
-  const MAX_BYTES = 5 * 1024 * 1024; // 5 MB; batas praktis dapat berbeda di Apps Script.
+  const MAX_BYTES = 30 * 1024 * 1024; // 5 MB; batas praktis dapat berbeda di Apps Script.
   let busy = false;
 
   function message(text, type="") {
@@ -99,7 +99,7 @@ footer{text-align:center;color:#71869f;font-size:.78rem;margin:28px 0 8px}
     if (busy) return;
     const file = fileInput.files[0];
     if (!file) return message("Pilih file terlebih dahulu.", "err");
-    if (file.size > MAX_BYTES) return message("Ukuran file melebihi batas 5 MB.", "err");
+    if (file.size > MAX_BYTES) return message("Ukuran file melebihi batas 30 MB.", "err");
     if (!SCRIPT_URL.startsWith("https://script.google.com/")) return message("URL Apps Script belum diatur. Periksa konstanta SCRIPT_URL di file ini.", "err");
 
     busy = true;
