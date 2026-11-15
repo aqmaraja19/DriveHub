@@ -81,6 +81,8 @@ window.addEventListener("message", (event) => {
   console.log("[DriveHub] Pesan diterima:", event.data);
   console.log("[DriveHub] Origin:", event.origin);
 
+  
+
   if (event.source !== iframe.contentWindow) {
     console.warn("[DriveHub] Sumber pesan bukan iframe upload.");
     return;
@@ -114,6 +116,11 @@ window.addEventListener("message", (event) => {
     activeRequestId = "";
   }
 });
+
+  iframe.addEventListener("load", () => {
+    console.log("[DriveHub] Iframe selesai memuat.");
+    console.log("[DriveHub] Active request:", activeRequestId);
+  });
 
 
   form.addEventListener("submit", (event) => {
