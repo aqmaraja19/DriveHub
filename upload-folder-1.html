@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#071a33">
+  <title>Upload 01 — DriveHub</title>
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <main class="container">
+    <header class="topbar">
+      <a class="brand brand-link" href="index.html" aria-label="Kembali ke beranda">
+        <div class="brand-mark">D</div>
+        <div>
+          <p class="eyebrow">FILE SUBMISSION PORTAL</p>
+          <h1>DriveHub</h1>
+        </div>
+      </a>
+      <a class="back-link" href="index.html">← Beranda</a>
+    </header>
+
+    <section class="upload-panel panel">
+      <div class="section-heading">
+        <p class="eyebrow">DIREKTORI UPLOAD 01</p>
+        <h2>Upload Tugas 1</h2>
+        <p class="muted">Pilih file, tentukan nama file jika diperlukan, lalu tekan tombol unggah.</p>
+      </div>
+
+      <!-- PENTING: data-folder harus sama persis dengan salah satu key di FOLDERS pada Code.gs. -->
+      <form
+        id="uploadForm"
+        data-folder="UPLOAD_1"
+        method="POST"
+        target="uploadFrame"
+        enctype="application/x-www-form-urlencoded"
+      >
+        <label class="field-label" for="file">Pilih file</label>
+        <input
+          class="file-input"
+          type="file"
+          id="file"
+          accept=".pdf,.png,.jpg,.jpeg"
+          required
+        >
+        <p class="hint">Format: PDF, PNG, JPG, JPEG · Maksimal 5 MB.</p>
+
+        <label class="field-label" for="newName">Nama file (opsional)</label>
+        <input
+          class="text-input"
+          type="text"
+          id="newName"
+          maxlength="160"
+          placeholder="Contoh: Tugas_Matematika"
+          autocomplete="off"
+        >
+        <p class="hint">Kosongkan jika ingin menggunakan nama file asli. Ekstensi file akan dipertahankan.</p>
+
+        <input type="hidden" id="payload" name="payload">
+
+        <div class="progress-track" aria-label="Progress upload">
+          <div id="bar" class="progress-bar"></div>
+        </div>
+        <div id="status" class="status" role="status" aria-live="polite">Belum ada file yang diunggah.</div>
+
+        <button class="primary-button" type="submit" id="submitBtn">Unggah File</button>
+      </form>
+
+      <!-- Iframe tersembunyi menerima respons dari Apps Script. -->
+      <iframe
+        id="uploadFrame"
+        name="uploadFrame"
+        title="Respons upload"
+        class="hidden-frame"
+      ></iframe>
+    </section>
+
+    <footer class="footer">DriveHub · File upload portal</footer>
+  </main>
+
+  <script src="assets/js/script.js" defer></script>
+</body>
+</html>
