@@ -83,11 +83,13 @@ window.addEventListener("message", (event) => {
 
   // Pastikan pesan berasal dari domain Google Apps Script.
   const trustedOrigin =
-    event.origin === "https://script.google.com" ||
-    event.origin.endsWith(".script.googleusercontent.com");
+  event.origin === "https://script.google.com" ||
+  /^https:\/\/[a-z0-9-]+-script\.googleusercontent\.com$/i.test(
+    event.origin
+    );
 
   if (!trustedOrigin) {
-    console.warn("[DriveHub] Origin tidak dikenal.");
+    console.warn("[DriveHub] Origin tidak dikenal:", event.origin);
     return;
   }
 
