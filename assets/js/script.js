@@ -76,22 +76,45 @@
     return `${name}.${originalExtension}`;
   }
 
-  window.addEventListener("message", (event) => {
-    // Respons harus berasal dari iframe upload yang sedang digunakan.
-    if (event.source !== iframe.contentWindow || !event.data) return;
-    if (!activeRequestId || event.data.requestId !== activeRequestId) return;
+  
+window.addEventListener("message", (event) => {
+  console.log("[DriveHub] Pesan diterima:", event.data);
+  console.log("[DriveHub] Origin:", event.origin);
 
-    resetUploadState();
+  if (event.source !== iframe.contentWindow) {
+    console.warn("[DriveHub] Sumber pesan bukan iframe upload.");
+    return;
+  }
 
-    if (event.data.ok === true) {
-      setProgress(100);
-      showMessage(event.data.message || "File berhasil disimpan ke Google Drive.", "ok");
-      form.reset();
-      activeRequestId = "";
-    } else {
-      showMessage(event.data.error || "Upload gagal. Silakan coba lagi.", "err");
-    }
-  });
+  if (!event.data) {
+    console.warn("[DriveHub] Data pesan kosong.");
+    return;
+  }
+
+  if (!activeRequestId || event.data.requestId !== activeRequestId) {
+    console.warn("[DriveHub] Request ID tidak cocok.");
+    return;
+  }
+
+  resetUploadState();
+
+  if (event.data.ok === true) {
+    setProgress(100);
+    showMessage(
+      event.data.message || "File berhasil disimpan ke Google Drive.",
+      "ok"
+    );
+    form.reset();
+    activeRequestId = "";
+  } else {
+    showMessage(
+      event.data.error || "Upload gagal. Silakan coba lagi.",
+      "err"
+    );
+    activeRequestId = "";
+  }
+});
+
 
   form.addEventListener("submit", (event) => {
     event.preventDefault();
