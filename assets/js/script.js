@@ -81,18 +81,22 @@ window.addEventListener("message", (event) => {
   console.log("[DriveHub] Pesan diterima:", event.data);
   console.log("[DriveHub] Origin:", event.origin);
 
-  
+  // Pastikan pesan berasal dari domain Google Apps Script.
+  const trustedOrigin =
+    event.origin === "https://script.google.com" ||
+    event.origin.endsWith(".script.googleusercontent.com");
 
-  if (event.source !== iframe.contentWindow) {
-    console.warn("[DriveHub] Sumber pesan bukan iframe upload.");
+  if (!trustedOrigin) {
+    console.warn("[DriveHub] Origin tidak dikenal.");
     return;
   }
 
-  if (!event.data) {
-    console.warn("[DriveHub] Data pesan kosong.");
+  if (!event.data || typeof event.data !== "object") {
+    console.warn("[DriveHub] Data pesan tidak valid.");
     return;
   }
 
+  // Pastikan respons sesuai dengan upload yang sedang berlangsung.
   if (!activeRequestId || event.data.requestId !== activeRequestId) {
     console.warn("[DriveHub] Request ID tidak cocok.");
     return;
@@ -106,6 +110,7 @@ window.addEventListener("message", (event) => {
       event.data.message || "File berhasil disimpan ke Google Drive.",
       "ok"
     );
+
     form.reset();
     activeRequestId = "";
   } else {
@@ -113,6 +118,7 @@ window.addEventListener("message", (event) => {
       event.data.error || "Upload gagal. Silakan coba lagi.",
       "err"
     );
+
     activeRequestId = "";
   }
 });
