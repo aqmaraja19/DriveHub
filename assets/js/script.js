@@ -2,7 +2,7 @@
   "use strict";
 
   // Ganti dengan URL Web App Apps Script yang berakhiran /exec.
-  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwnL3W3D80PgIjwqPjPnr0wkf6rO_Cw2avj9tCguy4gWFkjdN-_lBC9p5desdwAcuZg/exec";
+  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwnRz_DwkBq3S7u2I1pzTognd4sFs4CwJ5TmRO2ldd34N3szlA-nIDXmXr9xYS_x4NO/exec";
 
   // Batas 5 MB. Base64 akan menambah ukuran data saat dikirim.
   const MAX_BYTES = 20 * 1024 * 1024;
