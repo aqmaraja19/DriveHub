@@ -2,10 +2,10 @@
   "use strict";
 
   // Ganti dengan URL Web App Apps Script yang berakhiran /exec.
-  const SCRIPT_URL = "PASTE_URL_WEB_APP_ANDA_DI_SINI";
+  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw0OWXRmLgqY6IwSjwUQYzp-B7AgjezS0XaTWGyn95trUrARPiGTcaWy-pspHTMsWTe/exec";
 
   // Batas 5 MB. Base64 akan menambah ukuran data saat dikirim.
-  const MAX_BYTES = 5 * 1024 * 1024;
+  const MAX_BYTES = 20 * 1024 * 1024;
   const TIMEOUT_MS = 120000;
 
   const ALLOWED_TYPES = {
