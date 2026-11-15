@@ -109,7 +109,7 @@
     }
 
     if (file.size > MAX_BYTES) {
-      showMessage("Ukuran file maksimal 5 MB.", "err");
+      showMessage("Ukuran file maksimal 20 MB.", "err");
       return;
     }
 
